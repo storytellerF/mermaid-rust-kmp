@@ -1,26 +1,26 @@
 # mermaid-rust-kmp
 
-`mermaid-rust-kmp` 为 [mermaid-rs-renderer](https://crates.io/crates/mermaid-rs-renderer) 提供 Kotlin Multiplatform 绑定。它通过 Rust 原生库（Android/JVM）或 WebAssembly（Wasm/JS）将 Mermaid 文本渲染为 SVG 字符串。
+`mermaid-rust-kmp` provides Kotlin Multiplatform bindings for [mermaid-rs-renderer](https://crates.io/crates/mermaid-rs-renderer). It renders Mermaid text to SVG strings through native Rust libraries on Android and JVM, or WebAssembly on Kotlin/Wasm.
 
-## 支持平台
+## Supported platforms
 
-| 平台 | 状态 |
+| Platform | Status |
 | --- | --- |
-| Android | 支持 |
-| JVM / Desktop | 支持 |
-| Kotlin/Wasm 浏览器 | 支持 |
-| Kotlin/JS | 当前未支持原生渲染 |
-| iOS | 当前未支持原生渲染 |
+| Android | Supported |
+| JVM / Desktop | Supported |
+| Kotlin/Wasm browser | Supported |
+| Kotlin/JS | Native rendering is not yet supported |
+| iOS | Native rendering is not yet supported |
 
-## 添加依赖
+## Add the dependency
 
-发布的 Kotlin Multiplatform 库坐标为：
+The published Kotlin Multiplatform library coordinates are:
 
 ```kotlin
 implementation("io.github.storytellerf:mermaidffi-kmp:<version>")
 ```
 
-在 Kotlin Multiplatform 项目中，将依赖添加到需要使用渲染器的平台 source set。例如，Android 和 JVM 可共享同一个 source set：
+Add the dependency to each source set that renders diagrams. For example, Android and JVM can share a source set:
 
 ```kotlin
 kotlin {
@@ -34,7 +34,7 @@ kotlin {
 }
 ```
 
-Kotlin/Wasm 目标还需要使用随库发布的 npm 包：
+Kotlin/Wasm targets also need the npm package published alongside the library:
 
 ```kotlin
 wasmJsMain.dependencies {
@@ -43,9 +43,9 @@ wasmJsMain.dependencies {
 }
 ```
 
-## 使用
+## Usage
 
-导入 `com.storyteller_f.mermaid_kmp` 下的函数，并传入 Mermaid 语法；返回值是 SVG 文本。
+Import a function from `com.storyteller_f.mermaid_kmp`, pass Mermaid syntax, and receive SVG text.
 
 ```kotlin
 import com.storyteller_f.mermaid_kmp.renderMermaid
@@ -59,17 +59,17 @@ val svg = renderMermaid(
 )
 ```
 
-可用 API：
+Available APIs:
 
-- `renderMermaid(input)`：使用默认渲染选项。
-- `renderMermaidWithSpacing(input, nodeSpacing, rankSpacing)`：调整节点和层级间距。
-- `renderMermaidClassicTheme(input)`：使用 Mermaid 默认（classic）主题。
+- `renderMermaid(input)`: renders with the default options.
+- `renderMermaidWithSpacing(input, nodeSpacing, rankSpacing)`: adjusts node and rank spacing.
+- `renderMermaidClassicTheme(input)`: renders with the Mermaid default (classic) theme.
 
-输入不被底层渲染器支持时，调用会抛出异常；请在 UI 或服务边界捕获并向用户显示错误。
+Calls throw an exception when the underlying renderer cannot process the input. Catch it at your UI or service boundary and present a useful error to the user.
 
-## 示例应用
+## Sample application
 
-[`sample/`](./sample) 是一个 Compose Multiplatform 示例，包含 Android、Desktop、Web（JS/Wasm）和 iOS 入口。它提供 Mermaid 编辑框和 SVG 输出预览文本。
+[`sample/`](./sample) is a Compose Multiplatform application with Android, Desktop, Web (JS/Wasm), and iOS entry points. It provides a Mermaid editor and displays the resulting SVG text.
 
 ```sh
 cd sample
@@ -77,18 +77,18 @@ cd sample
 # Android APK
 ./gradlew :androidApp:assembleDebug
 
-# Desktop 应用
+# Desktop application
 ./gradlew :desktopApp:run
 
-# Kotlin/Wasm 浏览器应用
+# Kotlin/Wasm browser application
 ./gradlew :webApp:wasmJsBrowserDevelopmentRun
 ```
 
-示例中的 iOS 与 Kotlin/JS 目标会显示“尚未支持原生渲染”的提示；Wasm、Android 和 JVM 目标会调用该库。
+The sample's iOS and Kotlin/JS targets display a "Native rendering not yet supported" message. Its Wasm, Android, and JVM targets invoke this library.
 
-## 从源码构建
+## Build from source
 
-构建需要 Rust stable、Android NDK/SDK、JDK 21、Node.js/npm、TypeScript、`wasm-opt` 和 BoltFFI CLI 0.26.1。CI 使用以下流程生成绑定并验证生成的 KMP 项目：
+Building requires Rust stable, the Android NDK/SDK, JDK 21, Node.js/npm, TypeScript, `wasm-opt`, and BoltFFI CLI 0.26.1. Generate the bindings and build the generated KMP project with:
 
 ```sh
 cargo install boltffi_cli --version 0.26.1
@@ -105,8 +105,8 @@ cd mermaid-ffi/dist/kotlin-multiplatform
 ./gradlew build -Pversion=0.0.0-local -Pgroup=io.github.storytellerf
 ```
 
-`patch-ffi.sh` 会为生成的 KMP 工程补充 Maven 发布设置、Kotlin/Wasm 配置和 Wasm 实现。若需要让生成的 KMP 工程使用已发布的 npm 包，可传入版本号：`./patch-ffi.sh <version>`。
+`patch-ffi.sh` adds Maven publishing configuration, Kotlin/Wasm support, and the Wasm implementation to the generated KMP project. To make the generated project use a published npm package, pass its version: `./patch-ffi.sh <version>`.
 
-## 发布
+## Publishing
 
-推送形如 `v<version>` 的 Git tag 会触发 GitHub Actions：发布 `mermaid-ffi-wasm` 到 npm，并发布 `mermaidffi-kmp` 到 Maven Central。
+Pushing a Git tag in the form `v<version>` triggers GitHub Actions to publish `mermaid-ffi-wasm` to npm and `mermaidffi-kmp` to Maven Central.
