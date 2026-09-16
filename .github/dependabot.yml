@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /mermaid-ffi
+    schedule:
+      interval: weekly
+  - package-ecosystem: gradle
+    directory: /sample
+    schedule:
+      interval: weekly
