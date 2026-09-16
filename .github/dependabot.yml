@@ -4,7 +4,23 @@ updates:
     directory: /mermaid-ffi
     schedule:
       interval: weekly
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: gradle
     directory: /sample
     schedule:
       interval: weekly
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
