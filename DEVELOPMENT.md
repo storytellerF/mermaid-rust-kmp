@@ -1,5 +1,3 @@
-<a id="building-and-verification"></a>
-
 # 构建与验证
 
 使用 Rust stable、JDK 21、Python 3.12 和 BoltFFI CLI 0.32.0。Rust 依赖、CLI 和 Wasm 运行时均使用 BoltFFI 0.32（锁定到 0.32.0）。crate 根按 0.32 导出宏的要求调用 `boltffi::scaffolding!()`。Windows 需要 Visual Studio C++ build tools 和 clang-cl；macOS 需要 Xcode 工具。Android/Wasm 构建还需要 Android SDK/NDK、Node/npm 和 Binaryen；Wasm 封装层会安装自身的 TypeScript 依赖。
@@ -35,8 +33,6 @@ cd mermaid-ffi/dist/kotlin-multiplatform
 
 预发布版本（例如 0.0.1-alpha4）发布到 npm 的 `next` 通道，稳定版本发布到 `latest`。工作流为两者显式传入 `--tag`，因为 npm 11 发布预发布版本时要求指定 tag。构建元数据不影响通道选择；版本号本身保持不变。
 
-<a id="release-authentication"></a>
-
 ## 发布认证
 
 npm 通过 GitHub Actions OIDC 发布 `mermaid-ffi-wasm`，不使用 NPM_TOKEN 或 NODE_AUTH_TOKEN。发布作业只在 `storytellerF/mermaid-rust-kmp` 的 GitHub 托管 Ubuntu runner 上执行，仅该作业获得 `id-token: write`。Node 限定在 Node 22 系列的 22.14.0 或更新版本；npm 显式安装 11.21.0（Trusted Publishing 要求 npm >=11.5.1）。setup-node 不生成带 auth-token 的 .npmrc；公开 registry 显式传给 npm。发布前更新生成包的元数据，加入 provenance 所需的上游 Git 仓库 URL。保留已有 Rust、BoltFFI、npm 和 Gradle 缓存。
@@ -60,8 +56,6 @@ Maven Central 使用独立认证。其当前官方 Portal API 文档使用 Porta
 
 参考：[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)、[npm 信任前置要求](https://docs.npmjs.com/cli/v11/commands/npm-trust/)、[Central Portal API 认证](https://central.sonatype.org/publish/publish-portal-api/)。
 
-<a id="renderer-wasm-timing-patch"></a>
-
 ## 渲染器 Wasm 计时补丁
 
 crates.io 的 renderer 0.3.1 在布局期间调用 std::time::Instant，会在裸 wasm32-unknown-unknown 上 panic。`scripts/prepare-renderer.py` 将准确的 0.3.1 crate 暂存到被忽略的 `build/renderer`，核验其原始 crates.io 校验和，再将三处时钟导入替换为 `templates/renderer/time.rs`。原生构建仍使用 std::time::Instant；Wasm 诊断耗时为零。布局和渲染逻辑不变。这样可避免 BoltFFI 裸 Wasm 引入 wasm-bindgen 时钟导入。`generate-kmp.py` 自动准备打过补丁的依赖。干净检出中直接运行 Cargo 前，先执行 `python scripts/prepare-renderer.py`。渲染器的[上游计时修复](https://github.com/1jehuang/mermaid-rs-renderer/pull/155) 尚未合并；有合适发布版本后移除本地补丁。
@@ -76,8 +70,6 @@ BoltFFI 0.32.0 在 npm 文件清单中包含生成的 Node 绑定。运行时版
 
 macOS 桌面构建对两种架构都固定使用 15.0 部署目标。构建向 Rust 和绑定生成器传入 MACOSX_DEPLOYMENT_TARGET，向 JNI 编译器和链接器传入 -mmacosx-version-min=15.0。构建后通过 otool 验证最终 dylib 的部署版本。构建和渲染测试在 macOS 15 上运行，与最低支持版本一致。
 
-<a id="actions-dependency-caches"></a>
-
 ## Actions 依赖缓存
 
 两个工作流都在安装 Rust stable 后使用 `.github/actions/build-cache`。Swatinem/rust-cache 2.9.2 缓存 Cargo registry/git 依赖和 `mermaid-ffi/target`，按操作系统、runner 架构，以及桌面与 Android/Wasm 目标集合分别设置键。其编译器指纹和 Cargo manifest/lock 哈希进一步隔离工具链和依赖。显式源码哈希覆盖渲染器计时补丁及 JNI 构建配置。通过校验和验证的 renderer 路径补丁，在 action 运行 Cargo metadata 之前准备；生成的 JNI 资源在本地重建，不作为 CI artifacts 恢复。
@@ -87,8 +79,6 @@ BoltFFI CLI 0.32.0 使用独立的 actions/cache 6.1.0 条目，键包含操作�
 Gradle User Home、依赖、Wrapper 分发包和本地构建状态只使用 `gradle/actions/setup-gradle` 6.4.0 及其增强缓存提供方。setup-java 提供 JDK 21，不启用缓存。Setup 在生成项目和补丁准备好之后、首次 Gradle 调用之前运行；自动 Wrapper 验证检查可用的 Wrapper JAR。Action 不安装 Gradle 版本：桌面测试和生成的 KMP 构建各自保留自己的 Wrapper。状态键包含操作系统、作业、工作流／矩阵和提交，分开四个桌面宿主（包括两种 macOS 架构）与 Android/Wasm 作业。它恢复最接近的可用状态，并对共享依赖去重。`cache-read-only: false` 允许 CI 保存 PR merge-ref 缓存，发布流程保存 tag 缓存；PR 条目可供同一 PR 后续运行复用，但其他 PR 或发布 tag 无法访问。平台和缓存键兼容时，main 条目可供新 PR 和 tag 使用。Post-action 在清理和保存前停止 Gradle daemon，Windows 也如此，因此不需要单独 `--stop`。不要再为 Gradle User Home 添加 setup-java 缓存或 actions/cache 条目。恢复和保存细节记录在 action 日志与作业摘要中。
 
 Android/Wasm 和发布使用 Node 22，仅缓存 npm 的 `~/.npm` 下载缓存。仓库不提交 npm lockfile：Wasm 暂存安装在 `scripts/build-wasm.py` 中固定工具和运行时版本，其包为生成内容。缓存键对该脚本、BoltFFI 配置、补丁脚本和 KMP 模板计算哈希；同平台 Node 22 的回退键复用已验证下载。每次运行仍解析并验证依赖；不缓存 node_modules 和生成包。setup-node 自动包管理器缓存被关闭，避免提供方重叠。PR 缓存限定于 PR merge ref，因此同一 PR 重跑可验证热命中；新 PR 和发布 tag 则可以从 main 恢复兼容的 Linux 下载。
-
-<a id="verifying-the-main-cache-baseline"></a>
 
 ### 验证 main 缓存基线
 

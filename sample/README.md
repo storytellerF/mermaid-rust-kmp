@@ -6,8 +6,6 @@
   - [commonMain](./shared/src/commonMain/kotlin) 存放所有目标共用的代码。
   - 其他目录存放仅针对目录名所示平台编译的 Kotlin 代码。例如，Kotlin 应用的 iOS 部分需要调用 Apple CoreCrypto 时，应放在 [iosMain](./shared/src/iosMain/kotlin)；Desktop（JVM）专用部分则放在 [jvmMain](./shared/src/jvmMain/kotlin)。
 
-<a id="running-the-apps"></a>
-
 ### 运行应用
 
 使用 IDE 工具栏运行控件提供的运行配置，也可以使用以下命令和选项：
@@ -20,8 +18,6 @@
   - Wasm 目标（更快，适用于现代浏览器）：`./gradlew :webApp:wasmJsBrowserDevelopmentRun`
   - JS 目标（较慢，支持旧浏览器）：`./gradlew :webApp:jsBrowserDevelopmentRun`
 - iOS 应用：在 Xcode 中打开 [/iosApp](./iosApp) 目录并运行。
-
-<a id="running-tests"></a>
 
 ### 运行测试
 

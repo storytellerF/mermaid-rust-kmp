@@ -2,8 +2,6 @@
 
 `mermaid-rust-kmp` 为 [mermaid-rs-renderer](https://crates.io/crates/mermaid-rs-renderer) 提供 Kotlin Multiplatform 绑定。在 Android 和 JVM 上通过 Rust 原生库，在 Kotlin/Wasm 上通过 WebAssembly，将 Mermaid 文本渲染为 SVG 字符串。
 
-<a id="supported-platforms"></a>
-
 ## 支持的平台
 
 | 平台 | 状态 |
@@ -13,8 +11,6 @@
 | Kotlin/Wasm 浏览器 | 已支持 |
 | Kotlin/JS | 尚不支持原生渲染 |
 | iOS | 尚不支持原生渲染 |
-
-<a id="add-the-dependency"></a>
 
 ## 添加依赖
 
@@ -47,8 +43,6 @@ wasmJsMain.dependencies {
 }
 ```
 
-<a id="usage"></a>
-
 ## 使用
 
 从 `com.storyteller_f.mermaid_kmp` 导入函数，传入 Mermaid 语法，即可获得 SVG 文本。
@@ -72,8 +66,6 @@ val svg = renderMermaid(
 - `renderMermaidClassicTheme(input)`：使用 Mermaid 默认的 classic 主题渲染。
 
 底层渲染器无法处理输入时，调用会抛出异常。在 UI 或服务边界捕获异常，并向用户提供有帮助的错误信息。
-
-<a id="sample-application"></a>
 
 ## 示例应用
 
