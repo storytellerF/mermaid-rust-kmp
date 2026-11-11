@@ -1,5 +1,19 @@
 # 构建与验证
 
+## 示例界面主题验证
+
+`sample/shared` 使用系统主题选择 Material 3 浅色或深色配色。根 `Surface` 提供页面背景和正文颜色，SVG 源码区域使用 `surfaceVariant/onSurfaceVariant`，不修改渲染器输出。
+
+```sh
+bash sample/gradlew -p sample :shared:jvmTest --console=plain
+```
+
+主题测试覆盖普通文字配色的 4.5:1 对比度、浅深色双向重组、编辑内容与 SVG 源码保留、错误提示、首次深色进入和重新进入的页面背景。桌面 UI 测试显式传入主题值，并向成功/错误场景注入确定的渲染结果；它们不验证原生渲染器，也不能替代系统主题事件验证。
+
+在 Android、Desktop、Web 和 iOS 宿主上分别检查：以浅色和深色首次打开；保留输入内容，在页面打开时切换系统主题两个方向；离开后切换主题再进入。检查标题、输入文字与标签、按钮的焦点/悬停、输入框边框，以及渲染失败后的错误提示。支持原生渲染的平台还应检查成功后的 SVG 源码区，确认字符串内容未随 UI 主题改变；iOS/JS 应保留其不支持原生渲染的提示。记录宿主与版本，并区分真实系统切换和测试参数注入。
+
+## 工具链与库验证
+
 使用 Rust stable、JDK 21、Python 3.12 和 BoltFFI CLI 0.32.0。Rust 依赖、CLI 和 Wasm 运行时均使用 BoltFFI 0.32（锁定到 0.32.0）。crate 根按 0.32 导出宏的要求调用 `boltffi::scaffolding!()`。Windows 需要 Visual Studio C++ build tools 和 clang-cl；macOS 需要 Xcode 工具。Android/Wasm 构建还需要 Android SDK/NDK、Node/npm 和 Binaryen；Wasm 封装层会安装自身的 TypeScript 依赖。
 
 ```sh
