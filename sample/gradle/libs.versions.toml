@@ -1,5 +1,5 @@
 [versions]
-agp = "9.5.1"
+agp = "9.5.3"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -13,9 +13,9 @@ androidx-testRunner = "1.7.0"
 composeMultiplatform = "1.12.2"
 junit = "4.13.2"
 kotlin = "2.4.21"
-kotlin-wrappers = "2026.11.2"
+kotlin-wrappers = "2026.11.4"
 kotlinx-coroutines = "1.11.0"
-material3 = "1.13.0-beta02"
+material3 = "1.13.0-rc01"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
